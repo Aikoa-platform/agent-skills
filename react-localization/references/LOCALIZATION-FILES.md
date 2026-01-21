@@ -1,0 +1,152 @@
+# Localization Files
+
+This reference explains how to organize translation files and determine the correct namespace for your translation keys.
+
+## File Location
+
+Translation files are located at: `src/locales/{{namespace}}/{{language}}.json`
+
+This path uses placeholders:
+- `{{language}}` - Replaced with the language code (e.g., `en`, etc.)
+- `{{namespace}}` - Replaced with the namespace name (e.g., `common`, `user`, `feedback`)
+
+The source language is **English** with code `en`.
+
+## Supported Languages
+
+The project supports these languages:
+- en
+
+## Namespace Determination
+
+The namespace should be based on the **feature domain** of the string, not the component it appears in.
+
+### Examples:
+
+| String | Component | Correct Namespace | Wrong Namespace |
+|--------|-----------|-------------------|-----------------|
+| "User profile" | `ProfileCard.tsx` | `user` | `profile` |
+| "Save changes" | `UserSettings.tsx` | `common` | `settings` |
+| "Feedback submitted" | `FeedbackForm.tsx` | `feedback` | `form` |
+| "Loading..." | `DataTable.tsx` | `common` | `table` |
+
+### Guidelines:
+
+1. **Feature Domain First**: Group strings by what they relate to (users, products, orders) rather than where they
+appear
+2. **Common Terms**: Reusable UI text like buttons ("Save", "Cancel", "Close") should go in the `common` namespace
+3. **Multiple Components**: A single component can use strings from multiple namespaces
+4. **Business Logic**: Strings related to business concepts should be grouped by that concept
+
+## File Structure
+
+Each namespace has a file for each language. For example:
+
+```
+locales/
+├── common/
+│ ├── en.json
+│ ├── de.json
+│ └── fr.json
+├── user/
+│ ├── en.json
+│ ├── de.json
+│ └── fr.json
+└── feedback/
+├── en.json
+├── de.json
+└── fr.json
+```
+
+## JSON File Format
+
+Translation files use nested JSON objects with dot notation keys:
+
+```json
+{
+"navigation": {
+"next": "Next",
+"previous": "Previous",
+"home": "Home"
+},
+"button": {
+"save": "Save",
+"cancel": "Cancel",
+"delete": "Delete"
+},
+"greeting": "Hello, {{name}}!"
+}
+```
+
+**Important:** Ensure that namespace files do not contain duplicate keys. Each key must be unique within its namespace.
+
+## Creating New Namespaces
+
+When no suitable namespace exists for a string:
+
+1. Create a new namespace folder
+2. Add the key-value pair to the `en.json` file
+3. Create empty placeholder files (`{}`) for all other languages
+
+Example: Creating a new `orders` namespace:
+
+```bash
+# Create namespace folder and files
+mkdir -p locales/orders
+echo '{"orderPlaced": "Order placed successfully"}' > locales/orders/en.json
+```
+
+All languages need to have the same namespace files, even if they're empty placeholders.
+
+## Source Language Workflow
+
+Most of the current UI text is in **English**. Your workflow should be:
+
+1. Find hardcoded English strings
+2. Add them to the `en.json` file in the appropriate namespace
+3. Replace the hardcoded string with a `t()` call
+4. Create empty placeholder files for other languages if it's a new namespace
+
+Actual translations to other languages are typically handled by translators, not during the localization process. Your
+job is to extract the English strings and structure them properly.
+
+## Duplicate String Handling
+
+Before adding a new string:
+
+1. **Search existing files**: Check if the string or a very similar one already exists
+2. **Consider `common`**: If it's a generic UI term, see if it should go in `common`
+3. **Context matters**: Some duplication is acceptable when the same words have different meanings in different contexts
+
+Example of acceptable duplication:
+- "Profile" in `user` namespace (user profile page)
+- "Profile" in `settings` namespace (profile settings)
+
+Example of duplication to avoid:
+- "Save" button appearing in multiple namespaces (should be in `common`)
+
+## Key Naming Conventions
+
+Use clear, descriptive keys that indicate the purpose:
+
+**Good:**
+- `button.save`
+- `validation.emailRequired`
+- `message.accountCreated`
+
+**Poor:**
+- `btn1`
+- `error`
+- `text5`
+
+## Strings to Ignore
+
+Do not localize:
+
+- Console logs, debug messages
+- Developer-facing error messages
+- Component prop values that are not user-facing (testID, className, data attributes)
+- Routes, URLs, API endpoints
+- Code identifiers, keys, IDs
+- Technical configuration strings
+- Strings already using `t()` or `Trans` component

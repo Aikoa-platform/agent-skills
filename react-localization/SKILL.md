@@ -13,10 +13,10 @@ If the user asks to only work on a specific part of the app, focus on that part.
 
 ## Quick Reference
 
-- **Source language:** <%= SOURCE_LANGUAGE %> (`<%= SOURCE_LANGUAGE_CODE %>`)
-- **Translation files:** `<%= TRANSLATION_PATH %>`
-- **Import hook from:** `<%= I18N_IMPORT %>`
-- **Source files:** `<%= SOURCE_GLOB %>`
+- **Source language:** English (`en`)
+- **Translation files:** `src/locales/{{namespace}}/{{language}}.json`
+- **Import hook from:** `react-i18next`
+- **Source files:** `src/**/*.{ts,tsx}`
 
 ## Workflow Summary
 
@@ -27,6 +27,7 @@ If the user asks to only work on a specific part of the app, focus on that part.
 5. **Check project health** - Run typecheck
 
 For detailed instructions, see:
+
 - [WORKFLOW.md](references/WORKFLOW.md) - Step-by-step localization process
 - [T-FUNCTION.md](references/T-FUNCTION.md) - How to use the t() function
 - [LOCALIZATION-FILES.md](references/LOCALIZATION-FILES.md) - Namespace organization
@@ -36,21 +37,14 @@ For detailed instructions, see:
 Run the i18next-cli lint script from this skill's scripts folder:
 
 ```bash
-<% if (PACKAGE_MANAGER === 'bun') { -%>
-bunx tsx scripts/i18next-lint.mjs lint
-<% } else if (PACKAGE_MANAGER === 'pnpm') { -%>
-pnpm exec tsx scripts/i18next-lint.mjs lint
-<% } else if (PACKAGE_MANAGER === 'yarn') { -%>
-yarn tsx scripts/i18next-lint.mjs lint
-<% } else { -%>
 npx tsx scripts/i18next-lint.mjs lint
-<% } -%>
 ```
 
 This uses i18next-cli to detect hardcoded strings. The script is self-contained and doesn't depend on the project's
 configuration.
 
 **Alternative:** If `tsx` is not available:
+
 ```bash
 node --experimental-strip-types scripts/i18next-lint.mjs lint
 ```
@@ -63,14 +57,14 @@ that should not be translated.
 For each hardcoded string:
 
 1. **Determine namespace** - Based on feature domain (not component name)
-2. **Add to JSON** - In `<%= SOURCE_LANGUAGE_CODE %>.json` for that namespace
+2. **Add to JSON** - In `en.json` for that namespace
 3. **Replace with t()** - See format below
 4. **Import hook** - Add `useTranslation` if needed
 
 ### Translation Hook
 
 ```tsx
-import { useTranslation } from "<%= I18N_IMPORT %>";
+import { useTranslation } from "react-i18next";
 
 const { t } = useTranslation("namespace");
 // or multiple:
@@ -81,22 +75,6 @@ const { t } = useTranslation(["namespace1", "namespace2"]);
 
 ### t() Function Format
 
-<% if (T_FUNCTION_FORMAT === "callback") { -%>
-**Callback format:**
-
-```tsx
-// Single namespace
-const { t } = useTranslation("common");
-t(($) => $.button.save);
-
-// Multiple namespaces
-const { t } = useTranslation(["user", "common"]);
-t(($) => $.profileTitle); // from "user" (first)
-t(($) => $.common.button.save); // from "common" (prefixed)
-```
-
-**Critical:** First namespace is NOT prefixed, others are prefixed in the path.
-<% } else { -%>
 **String format:**
 
 ```tsx
@@ -111,7 +89,6 @@ t("common:button.save"); // from "common" (prefixed)
 ```
 
 **Critical:** First namespace is NOT prefixed, others use `namespace:` prefix.
-<% } -%>
 
 See [T-FUNCTION.md](references/T-FUNCTION.md) for complete details on interpolation, pluralization, and passing t() to
 functions.
@@ -132,7 +109,8 @@ See [LOCALIZATION-FILES.md](references/LOCALIZATION-FILES.md) for detailed guida
 ## Creating New Namespaces
 
 When needed:
-1. Add keys to `<%= SOURCE_LANGUAGE_CODE %>.json` in new namespace
+
+1. Add keys to `en.json` in new namespace
 2. Create empty `{}` files for all other languages
 
 ## Regenerating i18n Types
@@ -140,15 +118,7 @@ When needed:
 After adding translation keys, regenerate TypeScript types for the translations:
 
 ```bash
-<% if (PACKAGE_MANAGER === 'bun') { -%>
-bunx tsx scripts/i18next-lint.mjs types
-<% } else if (PACKAGE_MANAGER === 'pnpm') { -%>
-pnpm exec tsx scripts/i18next-lint.mjs types
-<% } else if (PACKAGE_MANAGER === 'yarn') { -%>
-yarn tsx scripts/i18next-lint.mjs types
-<% } else { -%>
 npx tsx scripts/i18next-lint.mjs types
-<% } -%>
 ```
 
 This updates the i18next type definitions so the `t()` function has proper autocomplete and type safety for the new
@@ -158,64 +128,48 @@ Ignore type errors from new translation keys until types are regenerated.
 
 ## Verifying Changes
 
-<% if (LINT_COMMAND && LINT_COMMAND.trim()) { -%>
 Run the project's linting:
+
 ```bash
-<%= LINT_COMMAND %>
+npm run lint
 ```
 
-<% } -%>
-<% if (TYPECHECK_COMMAND && TYPECHECK_COMMAND.trim()) { -%>
 Run type checking:
-```bash
-<%= TYPECHECK_COMMAND %>
-```
 
-<% } else { -%>
-Run type checking (adjust command based on your project):
 ```bash
-<% if (PACKAGE_MANAGER === 'bun') { -%>
-bun run typecheck
-<% } else if (PACKAGE_MANAGER === 'pnpm') { -%>
-pnpm typecheck
-<% } else if (PACKAGE_MANAGER === 'yarn') { -%>
-yarn typecheck
-<% } else { -%>
 npm run typecheck
-<% } -%>
 ```
 
-<% } -%>
-<% if ((LINT_COMMAND && LINT_COMMAND.trim()) || (TYPECHECK_COMMAND && TYPECHECK_COMMAND.trim())) { -%>
 Fix all issues until no errors remain.
-<% } -%>
 
 ## Example Transformation
 
 **Before:**
+
 ```tsx
 function UserCard() {
-return <Button>Save Changes</Button>;
+  return <Button>Save Changes</Button>;
 }
 ```
 
 **After:**
+
 ```tsx
-import { useTranslation } from "<%= I18N_IMPORT %>";
+import { useTranslation } from "react-i18next";
 
 function UserCard() {
-const { t } = useTranslation("common");
-return <Button>{t(<% if (T_FUNCTION_FORMAT === "callback") { %>($) =>
-  $.button.save<% } else { %>"button.save"<% } %>)}</Button>;
+  const { t } = useTranslation("common");
+  return <Button>{t("button.save")}</Button>;
 }
 ```
 
-**In `common/<%= SOURCE_LANGUAGE_CODE %>.json`:**
+**In `common/en.json`:**
+
 ```json
 {
-"button": {
-"save": "Save Changes"
-}
+  "button": {
+    "save": "Save Changes"
+  }
 }
 ```
 
@@ -229,6 +183,7 @@ This is NOT required for the localization workflow but enables additional i18nex
 ## Strings to Ignore
 
 Do not localize:
+
 - Console logs, debug messages
 - Technical IDs, keys, routes
 - Component props (className, testID, etc.)

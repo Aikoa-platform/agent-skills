@@ -1,0 +1,76 @@
+#!/usr/bin/env node
+/**
+ * i18next-cli programmatic wrapper
+ * This script provides lint and type generation functionality using i18next-cli.
+ * It's self-contained and doesn't depend on the project's configuration.
+ */
+
+import { runLinter, runTypesGenerator } from 'i18next-cli';
+
+const config = {
+  locales: [<%- SUPPORTED_LANGUAGES.map(l => `"${l}"`).join(", ") %>],
+  extract: {
+    input: ["<%= SOURCE_GLOB %>"],
+    output: "<%= TRANSLATION_PATH %>",
+  },
+  lint: {
+    // Use i18next-cli's built-in linting
+  },
+  types: {
+    // Let i18next-cli auto-detect type configuration
+    // from the project's i18next setup
+  },
+};
+
+const command = process.argv[2];
+const args = process.argv.slice(3);
+
+async function main() {
+  try {
+    if (command === 'lint') {
+      console.log('🔍 Scanning for hardcoded strings...\n');
+      
+      const result = await runLinter(config);
+      
+      if (result.success) {
+        console.log('✅ No hardcoded strings found!');
+        process.exit(0);
+      } else {
+        console.log('❌ Found hardcoded strings:\n');
+        console.log(result.message);
+        
+        if (result.files) {
+          console.log('\nFiles with issues:');
+          for (const [filename, issues] of Object.entries(result.files)) {
+            console.log(`\n📄 ${filename}`);
+            console.log(`   ${issues.length} issue(s) found`);
+          }
+        }
+        
+        process.exit(1);
+      }
+    } else if (command === 'types') {
+      console.log('🔧 Regenerating i18next types...\n');
+      
+      await runTypesGenerator(config);
+      
+      console.log('✅ Types regenerated successfully!');
+      process.exit(0);
+    } else {
+      console.error('Usage: node i18next-lint.mjs <lint|types>');
+      console.error('');
+      console.error('Commands:');
+      console.error('  lint   - Find hardcoded strings in source files');
+      console.error('  types  - Regenerate TypeScript types for translations');
+      process.exit(1);
+    }
+  } catch (error) {
+    console.error('❌ Error:', error.message);
+    if (error.stack) {
+      console.error(error.stack);
+    }
+    process.exit(1);
+  }
+}
+
+main();

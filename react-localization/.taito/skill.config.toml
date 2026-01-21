@@ -50,24 +50,6 @@ type = "array"
 prompt = "Which languages do you support? (comma-separated language codes)"
 default = ["en"]
 
-# ESLint config file for i18n
-[variables.ESLINT_CONFIG]
-type = "string"
-prompt = "ESLint config file for i18n rules (leave empty if using default)"
-default = ""
-
-# Lint command
-[variables.LINT_COMMAND]
-type = "string"
-prompt = "Command to run linting"
-default = "npm run lint"
-
-# Type check command
-[variables.TYPECHECK_COMMAND]
-type = "string"
-prompt = "Command to run type checking"
-default = "npm run typecheck"
-
 # Package manager
 [variables.PACKAGE_MANAGER]
 type = "choice"
@@ -90,14 +72,20 @@ default = "npm"
   value = "yarn"
   label = "yarn"
 
+# Lint command (optional)
+[variables.LINT_COMMAND]
+type = "string"
+prompt = "Command to run linting (leave empty to omit)"
+default = "npm run lint"
+
+# Type check command
+[variables.TYPECHECK_COMMAND]
+type = "string"
+prompt = "Command to run type checking"
+default = "npm run typecheck"
+
 # Source files glob pattern
 [variables.SOURCE_GLOB]
 type = "string"
 prompt = "Glob pattern for source files to check"
 default = "src/**/*.{ts,tsx}"
-
-# i18next types command
-[variables.TYPES_COMMAND]
-type = "string"
-prompt = "Command to regenerate i18next types (leave empty if not applicable)"
-default = ""
