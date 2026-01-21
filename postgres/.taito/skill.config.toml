@@ -1,0 +1,11 @@
+[meta]
+name = "postgres"
+version = "1.0.0"
+description = "Query and interact with PostgreSQL databases using Bun's built-in SQL client."
+
+[variables.POSTGRES_URL_ENV]
+type = "string"
+prompt = "Which env var holds the Postgres connection URL?"
+default = "POSTGRES_URL"
+required = true
+validate = "^[A-Z0-9_]+$"

@@ -1,0 +1,28 @@
+---
+name: Postgres Client
+---
+
+# Postgres Client (Bun SQL)
+
+The client script is `scripts/postgres-client.ts`. Bun loads `.env` from the project root automatically, and the client reads the Postgres URL from `POSTGRES_URL`.
+
+## Usage
+Run from the project root so `.env` is applied:
+
+`bunx --bun scripts/postgres-client.ts --query "SELECT 1"`
+
+Use a SQL file:
+`bunx --bun scripts/postgres-client.ts --file ./sql/users.sql`
+
+## Options
+- `--query`, `-q`: SQL query string.
+- `--file`, `-f`: Path to a `.sql` file (relative to the current working directory).
+- `--params`: JSON array passed to `sql.unsafe` for parameterized queries.
+- `--format`: `json` (default) or `table`.
+
+## Environment
+- `POSTGRES_URL`: Postgres connection URL.
+- `POSTGRES_READ_ONLY`: "true" or "false" (default "true"). When "true", the client blocks mutating statements.
+
+## Read-only behavior
+Read-only enforcement is a best-effort client-side check for mutating keywords. It is not a substitute for database permissions.
