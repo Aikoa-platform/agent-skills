@@ -1,4 +1,8 @@
-# React Localization Skill
+# Aikoa agent skills
+
+A random suite of skills developed for the Aikoa project.
+
+# React-localization skill
 
 A customizable Agent Skill for finding and localizing hardcoded user-facing strings in React applications. This skill uses [i18next-cli](https://github.com/i18next/i18next-cli) to detect untranslated strings and guides AI agents through the process of moving them to proper i18n translation files.
 
@@ -135,6 +139,10 @@ function UserCard() {
   }
 }
 ```
+
+# Postgres skill
+
+TBD
 
 ## Contributing
 
