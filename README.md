@@ -14,6 +14,8 @@ A customizable Agent Skill for finding and localizing hardcoded user-facing stri
 
 ### Using Taito CLI (Recommended)
 
+This is a customizable skill for the [Taito CLI](https://github.com/danieldunderfelt/taito-cli). Other skill managers can also be used, but Taito will allow you to customize the skill for your project.
+
 Install and customize for your project:
 
 ```bash
@@ -102,23 +104,6 @@ The skill includes detailed reference files:
 - React project with TypeScript
 - i18next/react-i18next for translations
 - Node.js 16+ (for running the bundled script)
-
-## Customization
-
-This is a customizable skill using the [Taito CLI format](https://github.com/taitodev/taito).
-
-The `.taito/` folder contains:
-
-- `skill.config.toml` - Variable definitions
-- `SKILL.md.ejs` - Main skill template
-- `scripts/i18next-lint.mjs.ejs` - Script template
-- `references/*.md.ejs` - Reference documentation templates
-
-To modify the skill for your needs:
-
-1. Edit templates in `.taito/`
-2. Run `taito build react-localization/` to regenerate default files
-3. The default files work with standard skill installers
 
 ## Example
 
