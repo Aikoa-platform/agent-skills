@@ -56,7 +56,7 @@ SOURCE_GLOB = "src/**/*.{ts,tsx}"
 Then install:
 
 ```bash
-taito add agent-skills --config ./localization-config.toml
+taito add aikoa-platform/agent-skills --config ./localization-config.toml
 ```
 
 ## Usage
